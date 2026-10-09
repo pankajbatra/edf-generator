@@ -20,17 +20,17 @@
     return {
       exporter: {
         name: '', address: '', iec: '', gstin: '', pan: '', entityType: 'company',
-        category: 'others', categoryOther: 'Software services exporter, not registered with STPI / SEZ / EOU',
+        category: 'others', categoryOther: 'Services exporter, not registered with STPI / SEZ / EOU',
         signatory: '', designation: 'Authorised Signatory', place: ''
       },
       bank: { name: '', address: '', ifsc: '', adCode: '', account: '' },
       filing: {
-        month: '', exportType: 'Software', nature: 'Non-Advance', exportKind: 'Regular',
+        month: '', exportType: 'Service', nature: 'Non-Advance', exportKind: 'Regular',
         delivery: 'Internet', realisation: 'Others', realisationSpecify: '',
-        description: '', sac: '998314', purposeCode: 'P0802', formNo: '', signDate: '',
+        description: '', sac: '998313', purposeCode: 'P0802', formNo: '', signDate: '',
         realised: 'yes', realisationDate: '',
         thirdPartyName: '', thirdPartyRel: '', thirdPartyAddress: '',
-        fill2A: true
+        fill2A: false
       },
       invoices: [blankInvoice()]
     };
@@ -228,7 +228,7 @@
       inrText = [R('Total FOB/Services value in words (INR): '), R('[enter exchange rate for every invoice]', 'bh')];
     }
 
-    var exportTypeLabel = f.exportType === 'Software' ? 'Software (Export of Software Services)' : 'Service (Export of Services)';
+    var exportTypeLabel = f.exportType === 'Software' ? 'Software' : 'Service';
 
     var t1 = { type: 'table', cols: [27, 23, 25, 25], rows: [
       [C(4, [R('1. General Information:')])],
@@ -258,7 +258,7 @@
           { span: 1, paras: [[R('Client Name & Address:')], [R(clean(iv.client), 'b')]].concat(lines(iv.address).map(function (l) { return [R(l, 'b')]; }))
             .concat(clean(iv.country) ? [[R(clean(iv.country), 'b')]] : []) },
           C(1, LV('Invoice No. ', iv.no, '[no.]'), LV('Invoice date: ', fmtDate(iv.date), '[date]'), LV('Invoice Currency: ', x.cur),
-            LV('Invoice Amount: ', fmtFC(x.amount), '[amount]'), LV('Contract No. and Date: ', iv.contract, 'Not applicable')),
+            LV('Invoice Amount: ', fmtFC(x.amount), '[amount]'), LV('Contract No. and Date: ', iv.contract)),
           C(2, [R('Nature of payment in terms of Contract:')],
             [tick(false), R(' FOB  '), tick(false), R(' CIF  '), tick(false), R(' C&F  '), tick(false), R(' CI')],
             [tick(pay === 'periodical'), R(' periodical  ', pay === 'periodical' ? 'b' : ''), tick(pay === 'milestone'), R(' milestone  ', pay === 'milestone' ? 'b' : ''),
@@ -272,7 +272,15 @@
           .forEach(function (row) { t2.rows.push([C(2, [R(row[0])]), C(1, [R(x.cur, 'b')]), C(1, [R(row[1], 'b')])]); });
       });
     } else {
-      t2.rows.push([C(4, [R('Not applicable: export of services. Details in Part 2B.', 'b')])]);
+      // Leave the goods block empty, as printed in the Annex. Many banks ask service exporters not to fill it.
+      t2.rows.push([C(1, [R('Client Name & Address:')]),
+        C(1, [R('Invoice No.')], [R('Invoice date:')], [R('Invoice Currency:')], [R('Invoice Amount:')], [R('Contract No. and Date:')]),
+        C(2, [R('Nature of payment in terms of Contract:')], [tick(false), R(' FOB  '), tick(false), R(' CIF  '), tick(false), R(' C&F  '), tick(false), R(' CI')],
+          [tick(false), R(' periodical  '), tick(false), R(' milestone  '), tick(false), R(' advance  '), tick(false), R(' others')],
+          [R('HSN/Service Accounting Codes (SAC):')])]);
+      t2.rows.push([C(2, [R('Particulars')]), C(1, [R('Currency')]), C(1, [R('Amount')])]);
+      ['FOB/Services Value', 'Freight/Transmission', 'Insurance', 'Commission', 'Discount', 'Other Deduction', 'Packing Charges',
+        'Full export value / Net Realisable export value'].forEach(function (lbl) { t2.rows.push([C(2, [R(lbl)]), C(1, [R('')]), C(1, [R('')])]); });
     }
     blocks.push(t2);
 
@@ -295,7 +303,7 @@
         C(1, [R(x.cur, 'b')]),
         C(1, [R(fmtFC(x.amount), 'b')]),
         C(1, [R(x.cur + ' ' + fmtFC(x.net), 'b')]),
-        C(1, [R(clean(iv.contract) || 'Not applicable', 'b')]),
+        C(1, [R(clean(iv.contract), 'b')]),
         C(1, [R(x.description, 'b')]),
         C(1, [R(x.sac, 'b')]),
         C(1, [R(remark, 'b')])
@@ -484,6 +492,10 @@
       var rec = num(iv.received);
       if (!isNaN(rec) && !isNaN(x.net) && rec < x.net) add('warn', tag + 'received ' + fmtFC(rec) + ' is less than net value ' + fmtFC(x.net) + '. Ask the bank to record the shortfall as bank charges, or reduce the net value.');
     });
+    var pc = clean(f.purposeCode).toUpperCase();
+    if (c.sacs.indexOf('998313') >= 0 && pc && pc !== 'P0802') add('warn', 'SAC 998313 (IT consulting and support) is normally paired with purpose code P0802. Banks may reject other pairings.');
+    if (pc && !/^P\d{4}$/.test(pc)) add('warn', 'Purpose code format looks wrong (expected P followed by 4 digits, for example P0802).');
+    add('info', 'Invoice tip: print "Payment terms: ' + f.nature + '" on each invoice, and the same SAC as in this form. Banks check the invoice against the EDF.');
     if (c.currencies.length > 1) add('info', 'Invoices are in more than one currency. The INR total adds them up at each invoice\'s rate.');
     if (c.thirdParty) add('warn', 'Third party payer entered. The bank must approve third-party receipts. Keep a document showing the link between the payer and your client.');
     if (f.nature === 'Advance') add('warn', 'Advance receipt: banks usually want a proforma invoice or contract now. The EDF follows when you raise the final invoice. Check with your bank before filing an EDF for an advance.');
@@ -565,7 +577,7 @@
     ['net', 'Net realisable value (blank = same as amount)', '', 'number'],
     ['rate', 'Exchange rate, INR per unit (as in GSTR-1)', '', 'number'],
     ['received', 'Amount received (for the email, optional)', '', 'number'],
-    ['contract', 'Contract no. and date', 'span2'],
+    ['contract', 'Contract no. and date (optional, blank if none)', 'span2'],
     ['description', 'Description (blank = overall description)', 'span2'],
     ['sac', 'SAC (blank = default)'],
     ['payment', 'Nature of payment', '', 'payment'],
@@ -686,11 +698,11 @@
     loadState({
       exporter: { name: 'EXAMPLE SOFTWORKS PRIVATE LIMITED', address: 'Unit 101, Example Tower, Sector 1\nGurugram, Haryana 122001, India',
         iec: 'AAACE1234F', gstin: '06AAACE1234F1Z5', pan: 'AAACE1234F', entityType: 'company', category: 'others',
-        categoryOther: 'Software services exporter, not registered with STPI / SEZ / EOU', signatory: 'A. Sample', designation: 'Director', place: 'Gurugram' },
+        categoryOther: 'Services exporter, not registered with STPI / SEZ / EOU', signatory: 'A. Sample', designation: 'Director', place: 'Gurugram' },
       bank: { name: 'Example Bank Limited, Gurgaon Branch', address: 'Ground Floor, Example Plaza, Sector 2\nGurugram, Haryana 122002', ifsc: 'EXMP0001234', adCode: '', account: '000123456789' },
-      filing: { month: '2026-10', exportType: 'Software', nature: 'Non-Advance', exportKind: 'Regular', delivery: 'Internet', realisation: 'Others',
-        description: 'Software development and IT consulting services, delivered remotely over the internet', sac: '998314', purposeCode: 'P0802',
-        realised: 'yes', realisationDate: '2026-11-12', fill2A: true },
+      filing: { month: '2026-10', exportType: 'Service', nature: 'Non-Advance', exportKind: 'Regular', delivery: 'Internet', realisation: 'Others',
+        description: 'Software development and IT consulting services, delivered remotely over the internet', sac: '998313', purposeCode: 'P0802',
+        realised: 'yes', realisationDate: '2026-11-12', fill2A: false },
       invoices: [
         { client: 'Northwind Analytics Inc', address: '100 Example Street\nAustin, TX 78701', country: 'United States', no: 'EXP-101', date: '2026-10-31',
           currency: 'USD', amount: '12000', net: '', rate: '88.50', received: '11975', contract: 'Master Services Agreement dated 01-04-2025', payment: 'periodical' },

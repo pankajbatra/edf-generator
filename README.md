@@ -59,9 +59,21 @@ You can also just open `index.html` from your computer. It works offline.
 | `vendor/docx-8.5.0.umd.js` | [docx](https://github.com/dolanmiu/docx) library (MIT), bundled so no CDN is needed |
 | `samples/sample-edf.json` | Fictional sample you can import |
 
+## Bank feedback (IDFC FIRST, October 2026)
+
+After the first filing, IDFC FIRST Bank asked for these changes. They are now the defaults:
+
+- **Type of export: Service**, even for IT and software work.
+- **SAC 998313** (IT consulting and support), paired with **purpose code P0802**.
+- **Part 2A left blank.** Only Part 2B is filled for services.
+- **Contract number and date** can be left blank if you have none.
+- Print **"Payment terms: Non-Advance"** (or Advance) on the invoice itself.
+
+Other banks may differ. Ask yours, and change the fields to suit.
+
 ## Notes and limits
 
-- Bank formats differ a little. Some banks want Part 2A filled even for services.
+- Bank formats differ a little. A few banks want Part 2A filled even for services.
   There is a switch for that.
 - Shipping bill, port and LEO date are "Not applicable" for services.
 - Invoices dated before 1 October 2026 generally fall under the old 2015 rules.

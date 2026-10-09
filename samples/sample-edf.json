@@ -11,7 +11,7 @@
       "pan": "AAACE1234F",
       "entityType": "company",
       "category": "others",
-      "categoryOther": "Software services exporter, not registered with STPI / SEZ / EOU",
+      "categoryOther": "Services exporter, not registered with STPI / SEZ / EOU",
       "signatory": "A. Sample",
       "designation": "Director",
       "place": "Gurugram"
@@ -25,14 +25,14 @@
     },
     "filing": {
       "month": "2026-10",
-      "exportType": "Software",
+      "exportType": "Service",
       "nature": "Non-Advance",
       "exportKind": "Regular",
       "delivery": "Internet",
       "realisation": "Others",
       "realisationSpecify": "",
       "description": "Software development and IT consulting services, delivered remotely over the internet",
-      "sac": "998314",
+      "sac": "998313",
       "purposeCode": "P0802",
       "formNo": "",
       "signDate": "",
@@ -41,7 +41,7 @@
       "thirdPartyName": "",
       "thirdPartyRel": "",
       "thirdPartyAddress": "",
-      "fill2A": true
+      "fill2A": false
     },
     "invoices": [
       {

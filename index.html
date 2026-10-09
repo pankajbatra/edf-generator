@@ -55,7 +55,7 @@
             <option value="warehouse">Warehouse export</option>
           </select>
         </label>
-        <label class="span2">If Others, specify<input data-path="exporter.categoryOther" placeholder="Software services exporter, not registered with STPI / SEZ / EOU"></label>
+        <label class="span2">If Others, specify<input data-path="exporter.categoryOther" placeholder="Services exporter, not registered with STPI / SEZ / EOU"></label>
         <label>Authorised signatory name<input data-path="exporter.signatory"></label>
         <label>Designation<input data-path="exporter.designation" placeholder="Director / Authorised Signatory / Proprietor"></label>
         <label>Place<input data-path="exporter.place" placeholder="City"></label>
@@ -81,10 +81,11 @@
         <label>Invoice month covered<input type="month" data-path="filing.month"></label>
         <label>Export type
           <select data-path="filing.exportType">
-            <option value="Software">Software (IT / ITeS / SaaS / development)</option>
-            <option value="Service">Service (other than software)</option>
+            <option value="Service">Service</option>
+            <option value="Software">Software</option>
           </select>
         </label>
+        <p class="hint span2">Ask your bank which one it wants. IDFC FIRST asks IT and software exporters to choose <em>Service</em>.</p>
         <label>Nature of receipt
           <select data-path="filing.nature">
             <option value="Non-Advance">Non-Advance (services already rendered)</option>
@@ -112,8 +113,9 @@
         </label>
         <label class="span2">Realisation details (if Others)<input data-path="filing.realisationSpecify"></label>
         <label class="span2">Description of services (overall)<textarea data-path="filing.description" rows="2" placeholder="Software development and IT consulting services, delivered remotely over the internet"></textarea></label>
-        <label>Default SAC code<input data-path="filing.sac" placeholder="998314"></label>
+        <label>Default SAC code<input data-path="filing.sac" placeholder="998313"></label>
         <label>Purpose code (for the email)<input data-path="filing.purposeCode" placeholder="P0802"></label>
+        <p class="hint span2">SAC 998313 (IT consulting and support) goes with purpose code P0802. Use the same SAC as on your GST invoice.</p>
         <label>Form No. (if the bank gave one)<input data-path="filing.formNo"></label>
         <label>Date you will sign<input type="date" data-path="filing.signDate"></label>
       </div>
@@ -139,7 +141,7 @@
       </div>
 
       <h3>Form options</h3>
-      <label class="inline"><input type="checkbox" data-path="filing.fill2A"> Also fill Part 2A (the goods block) for each invoice. Some banks' sample forms use it for services. Part 2B is always filled.</label>
+      <label class="inline"><input type="checkbox" data-path="filing.fill2A"> Also fill Part 2A (the goods block) for each invoice. Leave this off unless your bank asks for it. Banks such as IDFC FIRST want 2A left blank for services. Part 2B is always filled.</label>
     </fieldset>
 
     <!-- 4. Invoices -->
