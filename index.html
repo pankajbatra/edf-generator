@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>EDF Generator for Service Exporters</title>
+<meta name="description" content="Generate the RBI Export Declaration Form (EDF) for software and service exports. Runs fully in your browser. Nothing is uploaded.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <strong>EDF Generator</strong>
+    <span class="muted">Export of software and services, FEMA 2026</span>
+  </div>
+  <div class="actions">
+    <button type="button" id="btnImport" class="btn">Import JSON</button>
+    <input type="file" id="fileImport" accept="application/json,.json" hidden>
+    <button type="button" id="btnExport" class="btn">Export JSON</button>
+    <button type="button" id="btnNextMonth" class="btn" title="Keep your profile and clients. Clear invoice numbers, dates and amounts.">Start next month</button>
+    <button type="button" id="btnSample" class="btn ghost">Load sample</button>
+    <button type="button" id="btnReset" class="btn ghost">Clear all</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="notice">
+    <p><strong>Private by design.</strong> This page has no server. Your data stays in this browser tab. The page's security policy blocks all network calls. To reuse your data next month, use <em>Export JSON</em> and keep the file. Then use <em>Import JSON</em> and <em>Start next month</em>.</p>
+    <label class="inline"><input type="checkbox" id="optAutosave"> Also keep a draft in this browser (localStorage). Leave this off on a shared computer.</label>
+  </section>
+
+  <form id="edfForm" autocomplete="off" novalidate>
+    <!-- 1. Exporter -->
+    <fieldset class="card">
+      <legend>1. Exporter</legend>
+      <div class="grid">
+        <label class="span2">Exporter name<input data-path="exporter.name" placeholder="ABC SOFTWARE PRIVATE LIMITED"></label>
+        <label class="span2">Address<textarea data-path="exporter.address" rows="2" placeholder="Unit, building, street, city, state, PIN"></textarea></label>
+        <label>IE Code (IEC)<input data-path="exporter.iec" maxlength="10" placeholder="10 characters"></label>
+        <label>GSTIN<input data-path="exporter.gstin" maxlength="15" placeholder="15 characters"></label>
+        <label>PAN<input data-path="exporter.pan" maxlength="10" placeholder="10 characters"></label>
+        <label>Exporter is
+          <select data-path="exporter.entityType">
+            <option value="company">Company / firm / LLP ("We")</option>
+            <option value="individual">Individual / proprietor ("I")</option>
+          </select>
+        </label>
+        <label>Category of exporter
+          <select data-path="exporter.category">
+            <option value="others">Others (most service exporters)</option>
+            <option value="dta">Custom (DTA unit)</option>
+            <option value="sez">SEZ</option>
+            <option value="eou">100% EOU</option>
+            <option value="warehouse">Warehouse export</option>
+          </select>
+        </label>
+        <label class="span2">If Others, specify<input data-path="exporter.categoryOther" placeholder="Software services exporter, not registered with STPI / SEZ / EOU"></label>
+        <label>Authorised signatory name<input data-path="exporter.signatory"></label>
+        <label>Designation<input data-path="exporter.designation" placeholder="Director / Authorised Signatory / Proprietor"></label>
+        <label>Place<input data-path="exporter.place" placeholder="City"></label>
+      </div>
+    </fieldset>
+
+    <!-- 2. Bank -->
+    <fieldset class="card">
+      <legend>2. Authorised Dealer (your bank)</legend>
+      <div class="grid">
+        <label class="span2">Bank and branch name<input data-path="bank.name" placeholder="XYZ Bank Limited, Gurgaon Branch"></label>
+        <label class="span2">Branch address<textarea data-path="bank.address" rows="2"></textarea></label>
+        <label>IFSC<input data-path="bank.ifsc" maxlength="11"></label>
+        <label>AD code<input data-path="bank.adCode" placeholder="Ask your branch / RM. Leave blank to let the bank fill it."></label>
+        <label>Account number (for the email only)<input data-path="bank.account"></label>
+      </div>
+    </fieldset>
+
+    <!-- 3. Filing -->
+    <fieldset class="card">
+      <legend>3. This filing</legend>
+      <div class="grid">
+        <label>Invoice month covered<input type="month" data-path="filing.month"></label>
+        <label>Export type
+          <select data-path="filing.exportType">
+            <option value="Software">Software (IT / ITeS / SaaS / development)</option>
+            <option value="Service">Service (other than software)</option>
+          </select>
+        </label>
+        <label>Nature of receipt
+          <select data-path="filing.nature">
+            <option value="Non-Advance">Non-Advance (services already rendered)</option>
+            <option value="Advance">Advance (services yet to be rendered)</option>
+          </select>
+        </label>
+        <label>Type of export
+          <select data-path="filing.exportKind">
+            <option value="Regular">Regular Export</option>
+            <option value="Project">Project Export</option>
+          </select>
+        </label>
+        <label>Mode of delivery
+          <select data-path="filing.delivery">
+            <option value="Internet">Internet</option>
+            <option value="Others">Others</option>
+          </select>
+        </label>
+        <label>Mode of realisation
+          <select data-path="filing.realisation">
+            <option value="Others">Others (remittance, advance, etc.)</option>
+            <option value="LC">Letter of Credit</option>
+            <option value="BG">Bank Guarantee</option>
+          </select>
+        </label>
+        <label class="span2">Realisation details (if Others)<input data-path="filing.realisationSpecify"></label>
+        <label class="span2">Description of services (overall)<textarea data-path="filing.description" rows="2" placeholder="Software development and IT consulting services, delivered remotely over the internet"></textarea></label>
+        <label>Default SAC code<input data-path="filing.sac" placeholder="998314"></label>
+        <label>Purpose code (for the email)<input data-path="filing.purposeCode" placeholder="P0802"></label>
+        <label>Form No. (if the bank gave one)<input data-path="filing.formNo"></label>
+        <label>Date you will sign<input type="date" data-path="filing.signDate"></label>
+      </div>
+
+      <h3>Realisation</h3>
+      <div class="grid">
+        <label>Have the proceeds been received?
+          <select data-path="filing.realised">
+            <option value="yes">Yes, already received ("have delivered")</option>
+            <option value="no">Not yet ("will deliver")</option>
+          </select>
+        </label>
+        <label>Received on / to be received by<input type="date" data-path="filing.realisationDate"></label>
+        <p class="hint span2">If received, use the date the bank received the remittance. If not received yet, use a date within the realisation period: 15 months from the invoice date (18 months if invoiced in INR). The <em>Suggest</em> button fills that in.</p>
+        <div class="span2"><button type="button" class="btn small" id="btnSuggestDate">Suggest latest permitted date</button></div>
+      </div>
+
+      <h3>Third party payer (only if someone other than the invoiced client pays)</h3>
+      <div class="grid">
+        <label>Third party name<input data-path="filing.thirdPartyName" placeholder="Leave blank if the client pays directly"></label>
+        <label>Relationship to exporter / client<input data-path="filing.thirdPartyRel"></label>
+        <label class="span2">Third party address<input data-path="filing.thirdPartyAddress"></label>
+      </div>
+
+      <h3>Form options</h3>
+      <label class="inline"><input type="checkbox" data-path="filing.fill2A"> Also fill Part 2A (the goods block) for each invoice. Some banks' sample forms use it for services. Part 2B is always filled.</label>
+    </fieldset>
+
+    <!-- 4. Invoices -->
+    <fieldset class="card">
+      <legend>4. Invoices in this month</legend>
+      <p class="hint">One EDF can cover all export invoices raised in one month, across one or more clients. Add one row per invoice.</p>
+      <div id="invoiceList"></div>
+      <button type="button" class="btn" id="btnAddInvoice">+ Add invoice</button>
+    </fieldset>
+  </form>
+
+  <!-- Checks -->
+  <section class="card" id="checksCard">
+    <h2>Checks</h2>
+    <ul id="checks"></ul>
+  </section>
+
+  <!-- Output -->
+  <section class="card">
+    <h2>Generate</h2>
+    <div class="actions left">
+      <button type="button" class="btn primary" id="btnDocx">Download Word (.docx)</button>
+      <button type="button" class="btn primary" id="btnPrint">Print / Save as PDF</button>
+      <button type="button" class="btn" id="btnCopyEmail">Copy disposal email</button>
+    </div>
+    <p class="hint">Print it, sign it, stamp it and scan it. Send it to your bank with the invoice(s) and your disposal instructions.</p>
+    <details>
+      <summary>Disposal instruction email (draft)</summary>
+      <pre id="emailText" class="email"></pre>
+    </details>
+  </section>
+
+  <section class="card previewcard">
+    <h2>Preview</h2>
+    <div class="preview-scroll"><div id="preview" class="edf"></div></div>
+  </section>
+
+  <footer class="foot">
+    <p>Format follows the Annex (Export Declaration Form) to the Foreign Exchange Management (Export and Import of Goods and Services) Regulations, 2026, Notification No. FEMA 23(R)/2026-RB, in force from 1 October 2026. Your bank's own SOP may ask for more. This tool is not legal or tax advice. Check every field before you sign.</p>
+  </footer>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="vendor/docx-8.5.0.umd.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
